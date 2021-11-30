@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Generador de árboles</title>
+</head>
+
+<body>
+    <div class="container ">
+        <div class="row justify-content-center mt-4">
+            <div class="col-5 justify-content-center">
+                <p>Indica los parámetros para construir el árbol:</p>
+            </div>
+        </div>
+        <div class="row formulario">
+            <div class="col-sm">
+                <form>
+                    <div class="row mb-4">
+                        <div class="col mb-4">
+                            <input type="number" class="rounded" id="nivel" placeholder="Nivel de árbol" min=2>
+                        </div>
+                        <div class="col  mb-4">
+                            <input type="number" class="rounded" id="amplitud" placeholder="Amplitud de árbol" min=1>
+                        </div>
+                        <div class="col  mb-4">
+                            <input type="number" class="rounded" id="padres" placeholder="Número de padres" min=1>
+                        </div>
+                        <div class="col  mb-4">
+                            <input type="number" class="rounded" id="hijos" placeholder="Número de hijos" min=1>
+                        </div>
+                        <div class="col  mb-4">
+                            <input type="number" class="rounded" id="nodos" placeholder="Número de nodos">
+                        </div>
+                        <div class="col  mb-4">
+                            <button type="button" class="rounded" id="dibujar">Dibujar</button>
+                        </div>
+                        <div class="col  mb-4">
+                            <button type="button" class="rounded" id="limpiar">Limpiar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row justify-content-center texto">
+            <div class="col justify-content-center">
+                <p class="text-center">Esperando datos...</p>
+            </div>
+        </div>
+        <div class="row justify-content-center txt-busqueda mt-4 mb-4" style="display: none">
+            <div class="col-8 justify-content-center">
+                <p class="text-busq">Selecciona el tipo de búsqueda y escribe el nodo objetivo</p>
+            </div>
+        </div>
+        <div class="row justify-content-center busqueda mt-4 mb-4" style="display: none">
+            <div class="col-4 justify-content-center">
+                <div class="form-check mb-3 mr-5">
+                    <input type="radio" class="form-check-input btn-prof" name="exampleRadios" id="exampleRadios1"
+                        value="option1">
+                    <input type="text" class="form-control txt-prof" aria-label="Text input with radio button"
+                        placeholder="Busqueda en profundidad">
+                </div>
+            </div>
+            <div class="col-4 justify-content-center">
+                <div class="form-check mb-3 mr-5">
+                    <input type="radio" class="form-check-input btn-anch" name="exampleRadios" id="exampleRadios2"
+                        value="option2">
+                    <input type="text" class="form-control txt-anch" aria-label="Text input with radio button"
+                        placeholder="Busqueda en anchura">
+                </div>
+            </div>
+            <div class="col justify-content-center">
+                <button type="button" class="rounded" id="busqueda">Buscar</button>
+            </div>
+            <div class="col justify-content-center">
+                <button type="button" class="rounded" id="limpiar-busqueda">Limpiar</button>
+            </div>
+        </div>
+        <div class="row justify-content-center resultado-busqueda mt-4 mb-4" style="display: none">
+            <div class="col justify-content-center">
+            </div>
+        </div>
+        <div class="row justify-content-center txt-busqueda mt-4 mb-4" style="display: none">
+            <div class="col-4 justify-content-center">
+                <p class="text-busq">Esperando datos</p>
+            </div>
+        </div>
+        
+        <div class="row d arbol">
+            <div class="col">
+                <script src="imprimirArbol.js"></script>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
