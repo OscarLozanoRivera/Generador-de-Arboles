@@ -20,14 +20,53 @@ let numBotones=10
 let botonesList=[]
 let pila=[]
 let visitados=[]
+let visitadosCadena=[]
 let nodoInicio=[]
-
-let aleatorio={
-  'inicio' : '00',
-  'final' : '76',
-  'barrera' :['10','11','12','13','15','16','17','18','19','25','35','45','55','65','75','85','30','31','32','33','43','53','63','62','61','51',
-  '81','82','83','84','85','86','87','77','67','57','47']
-}
+let lista=[]
+let pruebaCont=0
+let prueba=[
+  {
+    'inicio' : '00',
+    'final' : '76',
+    'barrera' :['10','11','12','13','15','16','17','18','19','25','35','45','55','65','75','85','30','31','32','33','43','53','63','62','61','51',
+    '81','82','83','84','85','86','87','77','67','57','47']
+  },
+  {
+    'inicio' : '52',
+    'final' : '87',
+    'barrera' :['12','22','32','40','41','42','43','44','61','62','63','64','72','82','83','84','85','86','76','77','78','66','68','56','58','46','48','36','38','26','16']
+  },
+  {
+    'inicio' : '00',
+    'final' : '99',
+    'barrera' :['81','72','63','54','45','','36','27','18']
+  },
+  {
+    'inicio' : '69',
+    'final' : '30',
+    'barrera' :['06','09','10','11','14','16','17','24','28','31','34','35','37','38','40','41','42','43','44','45','47','59','62','63','64','65','66','67','68','74','82','83','84','85','86','87']
+  },
+  {
+    'inicio' : '69',
+    'final' : '30',
+    'barrera' :['06','09','10','11','14','16','17','24','28','31','34','35','37','38','40','41','42','43','44','45','47','59','62','63','64','65','66','67','68','74','82','83','84','85','86','87']
+  },
+  {
+    'inicio' : '42',
+    'final' : '72',
+    'barrera' :['24','25','34','35','44','45','54','55','64','65']
+  },
+  {
+    'inicio' : '00',
+    'final' : '13',
+    'barrera' :['02','11']
+  },
+  {
+    'inicio' : '42',
+    'final' : '46',
+    'barrera' :['','44']
+  }
+]
 
 //Dibujo de tablero
 nuevo=document.createElement("div");
@@ -42,6 +81,7 @@ for (let i = 0; i <= numBotones; i++) {
     boton.setAttribute('type','button');
     boton.classList.add('btn');
     boton.classList.add('btn-numero');
+    boton.setAttribute('disabled',"")
     if (i==0)
       boton.textContent="F/C"
     else
@@ -65,6 +105,7 @@ for (let e = 0; e < numBotones ; e++) {
         if (i==0){
           boton.textContent=e.toString()
           boton.classList.add('btn-numero');
+          boton.setAttribute('disabled',"")
         }
         else{
           valor=e.toString()+(i-1).toString();
@@ -78,7 +119,7 @@ for (let e = 0; e < numBotones ; e++) {
     botonesList.push(lista)
     for (let i = 0; i < numBotones; i++) {
         botonesList[e][i].addEventListener('click', () => {
-            console.log(botonesList[e][i].value)
+            //console.log(botonesList[e][i].value)
             botonesList[e][i].textContent=""
             if (indicadorBarrera.checked==true){
               if (botonesList[e][i].classList.contains('btn-success')){
@@ -131,8 +172,8 @@ for (let e = 0; e < numBotones ; e++) {
     }
     botones.appendChild(nuevo);
 }
-//Acciones Boton Resolver
-document.querySelector("#resolver").addEventListener('click', () => {
+//Acciones Boton Resolver por Profundidad
+document.querySelector("#resolverP").addEventListener('click', () => {
   mensaje=""
   if (puntoInicio==null)
   mensaje=mensaje+"<p>Falta punto de inicio</p>"
@@ -152,7 +193,51 @@ document.querySelector("#resolver").addEventListener('click', () => {
     });
     if (crearArbolporProfundidad()){
       dibujarArbol(nodoInicio)
-      document.querySelector(".Error").innerHTML="Se pudo llegar a la meta"
+      cadena=""
+      visitadosCadena.forEach(visitado => {
+        cadena+=visitado+"->"
+      });
+      cadena=cadena.slice(0, -1)
+      cadena=cadena.slice(0, -1)
+      document.querySelector(".Error").innerHTML="Recorrido:"+ cadena
+    }
+    else{
+      if (document.querySelector("svg")!=null)
+        document.querySelector("svg").remove()
+      document.querySelector(".Error").innerHTML="No se puede llegar a la meta por las barreras puestas"
+    }
+      
+  }
+
+})
+//Acciones Boton Resolver por Amplitud
+document.querySelector("#resolverA").addEventListener('click', () => {
+  mensaje=""
+  if (puntoInicio==null)
+  mensaje=mensaje+"<p>Falta punto de inicio</p>"
+  if (puntoFin==null)
+    mensaje=mensaje+"<p>Falta punto de fin</p>"
+  if (mensaje!="")
+    document.querySelector(".Error").innerHTML=mensaje
+  else{
+    botonesList.forEach(botonFila => {
+      botonFila.forEach(boton => {
+        boton.textContent=""
+        if (boton.classList.contains('btn-primary'))
+          boton.classList.toggle('btn-primary')
+        if (boton.classList.contains('btn-danger'))
+          boton.classList.toggle('btn-danger')
+      });
+    });
+    if (crearArbolporAmplitud()){
+      dibujarArbol(nodoInicio)
+      cadena=""
+      visitadosCadena.forEach(visitado => {
+        cadena+=visitado+"->"
+      });
+      cadena=cadena.slice(0, -1)
+      cadena=cadena.slice(0, -1)
+      document.querySelector(".Error").innerHTML="Recorrido:"+ cadena
     }
     else{
       if (document.querySelector("svg")!=null)
@@ -194,92 +279,112 @@ document.querySelector("#limpiar").addEventListener('click', () => {
 
 
 })
-//Acciones Boton Aleatorio
-document.querySelector('#aleatorio').addEventListener('click', () =>{
+//Acciones Boton Prueba
+document.querySelector('#prueba').addEventListener('click', () =>{
+  document.querySelector("#limpiar").click()
   botonesList.forEach(botonFila => {
     botonFila.forEach(boton => {
-      if (aleatorio['barrera'].includes(boton.value))
+      if (prueba[pruebaCont]['barrera'].includes(boton.value))
         boton.classList.toggle('btn-dark')
-      if (boton.value==aleatorio['inicio'])
+      if (boton.value==prueba[pruebaCont]['inicio'])
         boton.classList.toggle('btn-success')
-      if (boton.value==aleatorio['final'])
+      if (boton.value==prueba[pruebaCont]['final'])
         boton.classList.toggle('btn-warning')
     });
   });
-  puntoInicio=botonesList[0][0]
-  puntoFin=botonesList[7][6]
+  puntoInicio=botonesList[ prueba[pruebaCont]['inicio'][0] ][ prueba[pruebaCont]['inicio'][1] ]
+  puntoFin=botonesList[prueba[pruebaCont]['final'][0]][prueba[pruebaCont]['final'][1]]
+  if (pruebaCont==prueba.length-1)
+  pruebaCont=0
+  else
+  pruebaCont++
 })
-
-//Función crear objeto Arbol
+//Función crear objeto Arbol por profundidad
 function crearArbolporProfundidad(){
-  direccion="";
   filIni=parseInt(puntoInicio.value[0]);
   colIni=parseInt(puntoInicio.value[1]);
   filFin=parseInt(puntoFin.value[0]);
   colFin=parseInt(puntoFin.value[1]);
-  /*if (filIni < filFin)
-    direccion+="d";
-  else if (filIni > filFin)
-    direccion+="u";
-  if (colIni < colFin)
-    direccion+="r";
-  else if (colIni > colFin)
-    direccion+="l";
-  console.log(direccion);*/
   nodoInicio={
     'nombre':filIni.toString()+colIni.toString(),
     'color':colores[0],
     'hijos' : []
   }
   let nodoActual=nodoInicio;
+  visitadosCadena=[]
   visitados=[]
   visitados.push(filIni.toString()+colIni.toString())
   pila.push(nodoInicio)
   filActual=filIni
   colActual=colIni
   paso=0
-
+  encontrado=false
   while(true){
-  //for(let contador = 0 ; contador < 50 ; contador++){
-    //console.log(nodoActual['nombre'])
     if (esNodoFinal(filActual,colActual)==true){
       nodoActual['color']=colores[2]
       //console.log("Se encontró. Fin")
-      return true
+      encontrado=true
+      paso--
+      nodoDesenplilado=pila.pop()
     }
-    for (direccion=0;direccion<4;direccion++){
-      if (nodoNoVisitado(filActual,colActual,direccion)==true){
-        paso++
-        if (direccion==0){colActual+=1}
-        else if(direccion==1){colActual-=1}
-        else if(direccion==2){filActual+=1}
-        else {filActual-=1}
-        nuevoNodo = {
-            "nombre": filActual.toString()+colActual.toString(),
-            "color" : colores[1],
-            "hijos": []
+    else{
+      for (direccion=0;direccion<4;direccion++){
+        if (nodoNoVisitado(filActual,colActual,direccion)==true){
+          if(!encontrado){
+            paso++
+            if (direccion==0){colActual+=1}
+            else if(direccion==1){colActual-=1}
+            else if(direccion==2){filActual+=1}
+            else {filActual-=1}
+            nuevoNodo = {
+                "nombre": filActual.toString()+colActual.toString(),
+                "color" : colores[1],
+                "hijos": []
+            }
+            botonesList[filActual][colActual].classList.toggle('btn-primary')
+            botonesList[filActual][colActual].textContent=paso.toString()
+            nodoActual.hijos.push(nuevoNodo)
+            visitados.push(filActual.toString()+colActual.toString())
+            visitadosCadena.push(filActual.toString()+colActual.toString())
+            pila.push(nuevoNodo)
+            break
+          }
+          else{
+            paso++
+            if (direccion==0){colActual+=1}
+            else if(direccion==1){colActual-=1}
+            else if(direccion==2){filActual+=1}
+            else {filActual-=1}
+            nuevoNodo = {
+                "nombre": filActual.toString()+colActual.toString(),
+                "color" : colores[3],
+                "hijos": []
+            }
+            botonesList[filActual][colActual].classList.toggle('btn-danger')
+            botonesList[filActual][colActual].textContent=paso.toString()+"'"
+            nodoActual.hijos.push(nuevoNodo)
+            visitados.push(filActual.toString()+colActual.toString())
+            pila.push(nuevoNodo)
+            break
+          }          
         }
-        botonesList[filActual][colActual].classList.toggle('btn-primary')
-        botonesList[filActual][colActual].textContent=paso.toString()
-        nodoActual.hijos.push(nuevoNodo)
-        visitados.push(filActual.toString()+colActual.toString())
-        pila.push(nuevoNodo)
-        break
-      }
-      else if(direccion==3){
-        paso--
-        nodoDesenplilado=pila.pop()
-        if (filActual==filIni && colActual==colIni){
-          return false
+        else if(direccion==3){
+          paso--
+          if (encontrado==false)
+            visitadosCadena.pop()
+          nodoDesenplilado=pila.pop()
+          if (filActual==filIni && colActual==colIni){
+            return encontrado
+          }
+          else {
+            if(encontrado==false){
+              nodoDesenplilado['color']=colores[3]
+              botonesList[filActual][colActual].classList.toggle('btn-primary')
+              botonesList[filActual][colActual].classList.toggle('btn-danger')
+              botonesList[filActual][colActual].textContent+="'"
+            }
+          }
         }
-        else{
-          nodoDesenplilado['color']=colores[3]
-          botonesList[filActual][colActual].classList.toggle('btn-primary')
-          botonesList[filActual][colActual].classList.toggle('btn-danger')
-          botonesList[filActual][colActual].textContent+="'"
-        }
-        
-        //console.log("Nodo despempilado",nodoDesenplilado['nombre'])
       }
     }
     if (pila.length!=0){
@@ -287,18 +392,90 @@ function crearArbolporProfundidad(){
       filActual=parseInt(nodoActual['nombre'][0])
       colActual=parseInt(nodoActual['nombre'][1])    
     }
-    else{
-      return false
-    }
-    
   }
-    /*if (nodoInicio['hijos'].length>0){
-    nodoInicio['hijos'].forEach(hijo => {
-      console.log(hijo['nombre']);
-    });
-  }*/
-  
-  
+}
+
+function crearArbolporAmplitud(){
+  filIni=parseInt(puntoInicio.value[0]);
+  colIni=parseInt(puntoInicio.value[1]);
+  filFin=parseInt(puntoFin.value[0]);
+  colFin=parseInt(puntoFin.value[1]);
+  nodoInicio={
+    'nombre':filIni.toString()+colIni.toString(),
+    'color':colores[0],
+    'hijos' : []
+  }
+  let indice=0
+  let lista=[]
+  lista.push(nodoInicio)
+  let nodoActual=lista[indice];
+  visitadosCadena=[]
+  visitados=[]
+  visitados.push(filIni.toString()+colIni.toString())
+  filActual=filIni
+  colActual=colIni
+  encontrado=false
+  while (true){
+    //console.log(nodoActual['nombre'])
+    for (direccion=0;direccion<4;direccion++){
+      if (nodoNoVisitado(filActual,colActual,direccion)==true){
+          if (direccion==0){colActual+=1}
+          else if(direccion==1){colActual-=1}
+          else if(direccion==2){filActual+=1}
+          else {filActual-=1}
+          if (esNodoFinal(filActual,colActual)==true){
+            encontrado=true
+              nuevoNodo = {
+                "nombre": filActual.toString()+colActual.toString(),
+                "color" : colores[2],
+                "hijos": []
+              }
+              visitadosCadena.push(filActual.toString()+colActual.toString())
+          }
+          else{
+            if (encontrado==false){
+              nuevoNodo = {
+                "nombre": filActual.toString()+colActual.toString(),
+                "color" : colores[1],
+                "hijos": []
+              }
+              botonesList[filActual][colActual].classList.toggle('btn-primary')
+              visitadosCadena.push(filActual.toString()+colActual.toString())
+            }
+            else{
+              nuevoNodo = {
+                "nombre": filActual.toString()+colActual.toString(),
+                "color" : colores[3],
+                "hijos": []
+              }
+              botonesList[filActual][colActual].classList.toggle('btn-danger')
+            }
+          }
+        botonesList[filActual][colActual].textContent=(indice+1).toString()
+        nodoActual.hijos.push(nuevoNodo)
+        visitados.push(filActual.toString()+colActual.toString())
+        lista.push(nuevoNodo)
+        if (direccion==0){colActual-=1}
+        else if(direccion==1){colActual+=1}
+        else if(direccion==2){filActual-=1}
+        else {filActual+=1}
+      }  
+    }
+    indice++
+    if (indice==lista.length){
+      if (encontrado==false){
+        visitados.forEach(visit => {
+          if (botonesList[visit[0]][visit[1]].classList.contains('btn-primary'))
+            botonesList[visit[0]][visit[1]].classList.toggle('btn-danger')
+            botonesList[visit[0]][visit[1]].classList.toggle('btn-primary')
+        });
+      }
+      return encontrado
+    }
+    nodoActual=lista[indice]
+    filActual=parseInt(nodoActual['nombre'][0])
+    colActual=parseInt(nodoActual['nombre'][1])
+ }
 }
 
 function nodoNoVisitado(e,i,direccion){ //direccion:     0-derecha   1-izquierda   2-abajo   3-arriba
