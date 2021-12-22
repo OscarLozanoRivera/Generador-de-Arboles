@@ -199,7 +199,7 @@ document.querySelector("#resolverP").addEventListener('click', () => {
       });
       cadena=cadena.slice(0, -1)
       cadena=cadena.slice(0, -1)
-      document.querySelector(".Error").innerHTML="Recorrido:"+ cadena
+      document.querySelector(".Error").innerHTML="Recorrido búsqueda por profundidad:"+ cadena
     }
     else{
       if (document.querySelector("svg")!=null)
@@ -237,7 +237,7 @@ document.querySelector("#resolverA").addEventListener('click', () => {
       });
       cadena=cadena.slice(0, -1)
       cadena=cadena.slice(0, -1)
-      document.querySelector(".Error").innerHTML="Recorrido:"+ cadena
+      document.querySelector(".Error").innerHTML="Recorrido búsqueda por amplitud:"+ cadena
     }
     else{
       if (document.querySelector("svg")!=null)
@@ -246,8 +246,6 @@ document.querySelector("#resolverA").addEventListener('click', () => {
     }
       
   }
-
- 
 
 })
 //Acciones Boton Limpiar
@@ -394,7 +392,7 @@ function crearArbolporProfundidad(){
     }
   }
 }
-
+//Función crear objeto Arbol por profundidad
 function crearArbolporAmplitud(){
   filIni=parseInt(puntoInicio.value[0]);
   colIni=parseInt(puntoInicio.value[1]);
