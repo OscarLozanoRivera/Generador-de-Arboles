@@ -69,6 +69,9 @@ let prueba=[
 ]
 
 //Dibujo de tablero
+
+
+//Dibujo de los número de columna
 nuevo=document.createElement("div");
 nuevo.classList.add("btn-group");
 nuevo.classList.add("ml-5");
@@ -89,7 +92,7 @@ for (let i = 0; i <= numBotones; i++) {
     nuevo.appendChild(boton)  
   }
 botones.appendChild(nuevo);
-
+//Dibujo de los botones (nodos) (cuadros) del laberinto y número de fila
 for (let e = 0; e < numBotones ; e++) {
     nuevo=document.createElement("div");
     nuevo.classList.add("btn-group");
@@ -102,12 +105,12 @@ for (let e = 0; e < numBotones ; e++) {
         boton=document.createElement("button")
         boton.setAttribute('type','button');
         boton.setAttribute('class','btn');
-        if (i==0){
+        if (i==0){  //Números de pila
           boton.textContent=e.toString()
           boton.classList.add('btn-numero');
           boton.setAttribute('disabled',"")
         }
-        else{
+        else{   //Cuadros del laberinto
           valor=e.toString()+(i-1).toString();
           boton.setAttribute('value',valor);
           lista.push(boton)
@@ -118,8 +121,8 @@ for (let e = 0; e < numBotones ; e++) {
     
     botonesList.push(lista)
     for (let i = 0; i < numBotones; i++) {
-        botonesList[e][i].addEventListener('click', () => {
-            //console.log(botonesList[e][i].value)
+        botonesList[e][i].addEventListener('click', () => {     //Acciones que hacer al presionar un cuadrado
+            //console.log(botonesList[e][i].value)              //Se revisa si era barrera, punto inicial o final
             botonesList[e][i].textContent=""
             if (indicadorBarrera.checked==true){
               if (botonesList[e][i].classList.contains('btn-success')){
@@ -175,13 +178,14 @@ for (let e = 0; e < numBotones ; e++) {
 //Acciones Boton Resolver por Profundidad
 document.querySelector("#resolverP").addEventListener('click', () => {
   mensaje=""
+  //Se verifica que haya punto de inicio y final
   if (puntoInicio==null)
   mensaje=mensaje+"<p>Falta punto de inicio</p>"
   if (puntoFin==null)
     mensaje=mensaje+"<p>Falta punto de fin</p>"
   if (mensaje!="")
     document.querySelector(".Error").innerHTML=mensaje
-  else{
+  else{     //Si pasa la restricción limpia el camino anterior si es que había para el siguiente camino
     botonesList.forEach(botonFila => {
       botonFila.forEach(boton => {
         boton.textContent=""
@@ -191,7 +195,7 @@ document.querySelector("#resolverP").addEventListener('click', () => {
           boton.classList.toggle('btn-danger')
       });
     });
-    if (crearArbolporProfundidad()){
+    if (crearArbolporProfundidad()){      //Si se encuentra un camino hacia el nodo final se imprime el camino y el árbol
       dibujarArbol(nodoInicio)
       cadena=""
       visitadosCadena.forEach(visitado => {
@@ -201,7 +205,7 @@ document.querySelector("#resolverP").addEventListener('click', () => {
       cadena=cadena.slice(0, -1)
       document.querySelector(".Error").innerHTML="Recorrido búsqueda por profundidad:"+ cadena
     }
-    else{
+    else{                               //Si no se encuentra camino se imprime que no se encontró por las barreras
       if (document.querySelector("svg")!=null)
         document.querySelector("svg").remove()
       document.querySelector(".Error").innerHTML="No se puede llegar a la meta por las barreras puestas"
@@ -213,6 +217,7 @@ document.querySelector("#resolverP").addEventListener('click', () => {
 //Acciones Boton Resolver por Amplitud
 document.querySelector("#resolverA").addEventListener('click', () => {
   mensaje=""
+  //Se verifica que haya punto de inicio y final
   if (puntoInicio==null)
   mensaje=mensaje+"<p>Falta punto de inicio</p>"
   if (puntoFin==null)
@@ -229,7 +234,7 @@ document.querySelector("#resolverA").addEventListener('click', () => {
           boton.classList.toggle('btn-danger')
       });
     });
-    if (crearArbolporAmplitud()){
+    if (crearArbolporAmplitud()){     //Si se encuentra un camino hacia el nodo final se imprime el camino y el árbol
       dibujarArbol(nodoInicio)
       cadena=""
       visitadosCadena.forEach(visitado => {
@@ -239,7 +244,7 @@ document.querySelector("#resolverA").addEventListener('click', () => {
       cadena=cadena.slice(0, -1)
       document.querySelector(".Error").innerHTML="Recorrido búsqueda por amplitud:"+ cadena
     }
-    else{
+    else{                             //Si no se encuentra camino se imprime que no se encontró por las barreras
       if (document.querySelector("svg")!=null)
         document.querySelector("svg").remove()
       document.querySelector(".Error").innerHTML="No se puede llegar a la meta por las barreras puestas"
@@ -250,6 +255,7 @@ document.querySelector("#resolverA").addEventListener('click', () => {
 })
 //Acciones Boton Limpiar
 document.querySelector("#limpiar").addEventListener('click', () => {
+  //Limpiar todo el tablero
   document.querySelector(".Error").innerHTML=""
   if (document.querySelector("svg")!=null)
     document.querySelector("svg").remove()
@@ -274,11 +280,13 @@ document.querySelector("#limpiar").addEventListener('click', () => {
         boton.classList.toggle('btn-danger')
     });
   });
-
+  puntoInicio=null
+  puntoFin=null
 
 })
 //Acciones Boton Prueba
 document.querySelector('#prueba').addEventListener('click', () =>{
+  //Se dibuja un laberinto prefabricado en la lista de prueba
   document.querySelector("#limpiar").click()
   botonesList.forEach(botonFila => {
     botonFila.forEach(boton => {
@@ -299,6 +307,7 @@ document.querySelector('#prueba').addEventListener('click', () =>{
 })
 //Función crear objeto Arbol por profundidad
 function crearArbolporProfundidad(){
+  //Crea el nodo inicial en el punto inicio indicado
   filIni=parseInt(puntoInicio.value[0]);
   colIni=parseInt(puntoInicio.value[1]);
   filFin=parseInt(puntoFin.value[0]);
@@ -308,27 +317,37 @@ function crearArbolporProfundidad(){
     'color':colores[0],
     'hijos' : []
   }
+  //Inicializa el nodoActual como el nodoInicio
   let nodoActual=nodoInicio;
   visitadosCadena=[]
   visitados=[]
+  //Adjunta a visitados el nodo inicio
   visitados.push(filIni.toString()+colIni.toString())
+  //Adjunta a la pila el nodo inicio
   pila.push(nodoInicio)
   filActual=filIni
   colActual=colIni
   paso=0
   encontrado=false
+  //Inicia el proceso de búsqueda
   while(true){
+    //Pregunta si en nodo actual es el nodo final
     if (esNodoFinal(filActual,colActual)==true){
+      //Si es el nodo actual cambia de color el cuadro y los siguientes nodos encontrados no pueden ser camino de búsqueda
       nodoActual['color']=colores[2]
       //console.log("Se encontró. Fin")
       encontrado=true
       paso--
+      //Se desempila el nodo actual que es el nodo final
       nodoDesenplilado=pila.pop()
     }
     else{
+      //Si no es el nodo final, se busca si tiene nodos vecinos en algún punto cardinal 
       for (direccion=0;direccion<4;direccion++){
-        if (nodoNoVisitado(filActual,colActual,direccion)==true){
+        if (nodoVecino(filActual,colActual,direccion)==true){
+          //Si encuentra un nodo vecino va a salir del ciclo de búsqueda
           if(!encontrado){
+            //Si ya se había encontrado el nodo final, se punta de color rojo en el laberinto y en el árbol
             paso++
             if (direccion==0){colActual+=1}
             else if(direccion==1){colActual-=1}
@@ -342,12 +361,15 @@ function crearArbolporProfundidad(){
             botonesList[filActual][colActual].classList.toggle('btn-primary')
             botonesList[filActual][colActual].textContent=paso.toString()
             nodoActual.hijos.push(nuevoNodo)
+            //Se añade a la lista de visitados y a la pila de en espera
             visitados.push(filActual.toString()+colActual.toString())
+            //Se empila en la lista de nodos del camino correcto
             visitadosCadena.push(filActual.toString()+colActual.toString())
             pila.push(nuevoNodo)
             break
           }
           else{
+            //Si no se había encontrado el nodo final se pinta de azul
             paso++
             if (direccion==0){colActual+=1}
             else if(direccion==1){colActual-=1}
@@ -367,8 +389,10 @@ function crearArbolporProfundidad(){
           }          
         }
         else if(direccion==3){
+          //Si no se encuentra algún nodo vecino se desenpila el nodo y se pinta de color rojo
           paso--
           if (encontrado==false)
+            //Se desempila de la lista de nodos del camino correcto
             visitadosCadena.pop()
           nodoDesenplilado=pila.pop()
           if (filActual==filIni && colActual==colIni){
@@ -385,6 +409,7 @@ function crearArbolporProfundidad(){
         }
       }
     }
+    //Se toma el nodo actual como el último nodo en la pila
     if (pila.length!=0){
       nodoActual=pila[pila.length-1]
       filActual=parseInt(nodoActual['nombre'][0])
@@ -394,6 +419,7 @@ function crearArbolporProfundidad(){
 }
 //Función crear objeto Arbol por profundidad
 function crearArbolporAmplitud(){
+  //Crea el nodo inicial en el punto inicio indicado
   filIni=parseInt(puntoInicio.value[0]);
   colIni=parseInt(puntoInicio.value[1]);
   filFin=parseInt(puntoFin.value[0]);
@@ -405,23 +431,30 @@ function crearArbolporAmplitud(){
   }
   let indice=0
   let lista=[]
+  //Adjunta a la pila el nodo inicio
   lista.push(nodoInicio)
+  //Inicializa el nodoActual como el nodoInicio
   let nodoActual=lista[indice];
   visitadosCadena=[]
   visitados=[]
+  //Adjunta a visitados el nodo inicio
   visitados.push(filIni.toString()+colIni.toString())
   filActual=filIni
   colActual=colIni
   encontrado=false
+  //Inicia el proceso de búsqueda
   while (true){
     //console.log(nodoActual['nombre'])
     for (direccion=0;direccion<4;direccion++){
-      if (nodoNoVisitado(filActual,colActual,direccion)==true){
+      //Pregunta si en nodo actual tiene nodos vecinos por visitar
+      if (nodoVecino(filActual,colActual,direccion)==true){
           if (direccion==0){colActual+=1}
           else if(direccion==1){colActual-=1}
           else if(direccion==2){filActual+=1}
           else {filActual-=1}
+          //Si tiene vecino se pregunta si es nodo final
           if (esNodoFinal(filActual,colActual)==true){
+            //Si es nodo final se pinta de amarillo en el árbol y los demás ya no podrán ser de color azul
             encontrado=true
               nuevoNodo = {
                 "nombre": filActual.toString()+colActual.toString(),
@@ -431,6 +464,8 @@ function crearArbolporAmplitud(){
               visitadosCadena.push(filActual.toString()+colActual.toString())
           }
           else{
+            //Si no es el nodo final y ya se encontró el nodo final, se enlista en la lista de nodos visitados 
+            // pero no en la de visitadosCadena que indica los nodos visitados para llegar al nodo final
             if (encontrado==false){
               nuevoNodo = {
                 "nombre": filActual.toString()+colActual.toString(),
@@ -440,6 +475,8 @@ function crearArbolporAmplitud(){
               botonesList[filActual][colActual].classList.toggle('btn-primary')
               visitadosCadena.push(filActual.toString()+colActual.toString())
             }
+            //Si no es el nodo final y no se ha encontrado el nodo final, se enlista en la lista de nodos visitados 
+            // y en la de visitadosCadena que indica los nodos visitados para llegar al nodo final
             else{
               nuevoNodo = {
                 "nombre": filActual.toString()+colActual.toString(),
@@ -460,8 +497,11 @@ function crearArbolporAmplitud(){
       }  
     }
     indice++
+    //Se pregunta si aún hay nodos en la lista para visitar
     if (indice==lista.length){
+      //Si ya no hay nodos, se termina el proceso
       if (encontrado==false){
+        //Si no se encontró el nodo final, se pintan de rojo todos los cuadros del laberinto
         visitados.forEach(visit => {
           if (botonesList[visit[0]][visit[1]].classList.contains('btn-primary'))
             botonesList[visit[0]][visit[1]].classList.toggle('btn-danger')
@@ -470,24 +510,27 @@ function crearArbolporAmplitud(){
       }
       return encontrado
     }
+    //Se toma como nodo actual el nodo siguiente en la lista
     nodoActual=lista[indice]
     filActual=parseInt(nodoActual['nombre'][0])
     colActual=parseInt(nodoActual['nombre'][1])
  }
 }
 
-function nodoNoVisitado(e,i,direccion){ //direccion:     0-derecha   1-izquierda   2-abajo   3-arriba
+function nodoVecino(e,i,direccion){ //direccion:     0-derecha   1-izquierda   2-abajo   3-arriba
   //console.log(visitados)
   if (direccion==0){i+=1}
   else if (direccion==1){i-=1}
   else if (direccion==2){e+=1}
   else {e-=1}
+  //Pregunta si no es nodo barrera
   for (let a=0;a<visitados.length;a++){
     if (visitados[a]==e.toString()+i.toString()){
       //console.log("Visitado",e.toString()+i.toString())
       return false
     }
   }
+  //Pregunta si no se quiere visitar un nodo que no existe por que se desborda el laberinto
   //console.log("El nodo",e.toString()+i.toString()," no ha sido visitado")
   if (direccion==0){
     if (i<numBotones){
@@ -542,24 +585,24 @@ function nodoNoVisitado(e,i,direccion){ //direccion:     0-derecha   1-izquierda
   //console.log("El nodo",e.toString()+i.toString()," no es barrera")
   return true
 }
-
+//Función que regresa true si el nodo indicado es el nodo final
 function esNodoFinal(e,i){
   return botonesList[e][i].classList.contains('btn-warning')
 }
-
+//Función para dibujar el árbol que se generó si se encontró el nodo final
 function dibujarArbol(treeData) {
 
-  // set the dimensions and margins of the diagram
+  // Se definen las dimensiones y margenes del div
   const margin = { top: 50, right: 50, bottom: 50, left: 50 },
     width = 4000 - margin.left - margin.right,
     height = 4000 - margin.top - margin.bottom;
 
-  // declares a tree layout and assigns the size
+  // Se inicializa la plantilla de arbol y se coloca el tamaño
   const treemap = d3.tree().size([height, width]);
-  //  assigns the data to a hierarchy using parent-child relationships
+  //  Asigna los datos usando la jerarquía padre-hijo
   let nodes = d3.hierarchy(treeData, d => d.hijos);
 
-  // maps the node data to the tree layout
+  // Mapea los nodos de datos a través de la plantilla del árbol
   nodes = treemap(nodes);
   const sevg = document.querySelector('svg');
   if (sevg != null) {
@@ -567,9 +610,7 @@ function dibujarArbol(treeData) {
     sevg.remove();
   }
 
-  // append the svg object to the body of the page
-  // appends a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
+  // Adjunta los elementos svg (nodos) al cuerpo de la página
   const svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom),
@@ -577,7 +618,7 @@ function dibujarArbol(treeData) {
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-  // adds the links between the nodes
+  // Pinta los enlaces entre nodos
   const link = g.selectAll(".link")
     .data(nodes.descendants().slice(1))
     .enter().append("path")
@@ -588,19 +629,19 @@ function dibujarArbol(treeData) {
         + " " + d.parent.x + "," + d.parent.y;
     });
 
-  // adds each node as a group
+  // Adjunta cada nodo a un grupo o nivel
   const node = g.selectAll(".node")
     .data(nodes.descendants())
     .enter().append("g")
     .attr("class", d => "node" + (d.hijos ? " node--internal" : " node--leaf"))
     .attr("transform", d => "translate(" + d.x + "," + d.y + ")");
 
-  // adds the circle to the node
+  // Enmarca el nodo en un círculo
   node.append("circle")
     .attr("r", d => 30)
     .style("fill", d => d.data.color);
 
-  // adds the text to the node
+  // Añadel el nombre al nodo
   node.append("text")
     .attr("style", "fontFamily:Verdana")
     .attr("font-family", "sans-serif ")
